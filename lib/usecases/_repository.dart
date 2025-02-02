@@ -1,6 +1,4 @@
-abstract class DataSource<T> {
-  const DataSource();
-
+abstract class IRepository<T> {
   Future<void> create(T data);
   Future<T?> find(int id);
   Future<List<T>> findAll();

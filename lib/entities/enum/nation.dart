@@ -1,198 +1,397 @@
+import 'package:hive_ce_flutter/hive_flutter.dart';
+
+@HiveType(typeId: 1)
 enum Nation {
+  @HiveField(0)
   afghanistan,
+  @HiveField(1)
   albania,
+  @HiveField(2)
   algeria,
+  @HiveField(3)
   andorra,
+  @HiveField(4)
   angola,
+  @HiveField(5)
   antiguaAndBarbuda,
+  @HiveField(6)
   argentina,
+  @HiveField(7)
   armenia,
+  @HiveField(8)
   australia,
+  @HiveField(9)
   austria,
+  @HiveField(10)
   azerbaijan,
+  @HiveField(11)
   bahamas,
+  @HiveField(12)
   bahrain,
+  @HiveField(13)
   bangladesh,
+  @HiveField(14)
   barbados,
+  @HiveField(15)
   belarus,
+  @HiveField(16)
   belgium,
+  @HiveField(17)
   belize,
+  @HiveField(18)
   benin,
+  @HiveField(19)
   bhutan,
+  @HiveField(20)
   bolivia,
+  @HiveField(21)
   bosniaAndHerzegovina,
+  @HiveField(22)
   botswana,
+  @HiveField(23)
   brazil,
+  @HiveField(24)
   brunei,
+  @HiveField(25)
   bulgaria,
+  @HiveField(26)
   burkinaFaso,
+  @HiveField(27)
   burundi,
+  @HiveField(28)
   cambodia,
+  @HiveField(29)
   cameroon,
+  @HiveField(30)
   canada,
+  @HiveField(31)
   capeVerde,
+  @HiveField(32)
   centralAfricanRepublic,
+  @HiveField(33)
   chad,
+  @HiveField(34)
   chile,
+  @HiveField(35)
   china,
+  @HiveField(36)
   colombia,
+  @HiveField(37)
   comoros,
+  @HiveField(38)
   congo,
+  @HiveField(39)
   costaRica,
+  @HiveField(40)
   croatia,
+  @HiveField(41)
   cuba,
+  @HiveField(42)
   cyprus,
+  @HiveField(43)
   czechRepublic,
+  @HiveField(44)
   democraticRepublicOfCongo,
+  @HiveField(45)
   denmark,
+  @HiveField(46)
   djibouti,
+  @HiveField(47)
   dominica,
+  @HiveField(48)
   dominicanRepublic,
+  @HiveField(49)
   eastTimor,
+  @HiveField(50)
   ecuador,
+  @HiveField(51)
   egypt,
+  @HiveField(52)
   elSalvador,
+  @HiveField(53)
   equatorialGuinea,
+  @HiveField(54)
   eritrea,
+  @HiveField(55)
   estonia,
+  @HiveField(56)
   eswatini,
+  @HiveField(57)
   ethiopia,
+  @HiveField(58)
   fiji,
+  @HiveField(59)
   finland,
+  @HiveField(60)
   france,
+  @HiveField(61)
   gabon,
+  @HiveField(62)
   gambia,
+  @HiveField(63)
   georgia,
+  @HiveField(64)
   germany,
+  @HiveField(65)
   ghana,
+  @HiveField(66)
   greece,
+  @HiveField(67)
   grenada,
+  @HiveField(68)
   guatemala,
+  @HiveField(69)
   guinea,
+  @HiveField(70)
   guineaBissau,
+  @HiveField(71)
   guyana,
+  @HiveField(72)
   haiti,
+  @HiveField(73)
   honduras,
+  @HiveField(74)
   hungary,
+  @HiveField(75)
   iceland,
+  @HiveField(76)
   india,
+  @HiveField(77)
   indonesia,
+  @HiveField(78)
   iran,
+  @HiveField(79)
   iraq,
+  @HiveField(80)
   ireland,
+  @HiveField(81)
   israel,
+  @HiveField(82)
   italy,
+  @HiveField(83)
   ivoryCoast,
+  @HiveField(84)
   jamaica,
+  @HiveField(85)
   japan,
+  @HiveField(86)
   jordan,
+  @HiveField(87)
   kazakhstan,
+  @HiveField(88)
   kenya,
+  @HiveField(89)
   kiribati,
+  @HiveField(90)
   kuwait,
+  @HiveField(91)
   kyrgyzstan,
+  @HiveField(92)
   laos,
+  @HiveField(93)
   latvia,
+  @HiveField(94)
   lebanon,
+  @HiveField(95)
   lesotho,
+  @HiveField(96)
   liberia,
+  @HiveField(97)
   libya,
+  @HiveField(98)
   liechtenstein,
+  @HiveField(99)
   lithuania,
+  @HiveField(100)
   luxembourg,
+  @HiveField(101)
   madagascar,
+  @HiveField(102)
   malawi,
+  @HiveField(103)
   malaysia,
+  @HiveField(104)
   maldives,
+  @HiveField(105)
   mali,
+  @HiveField(106)
   malta,
+  @HiveField(107)
   marshallIslands,
+  @HiveField(108)
   mauritania,
+  @HiveField(109)
   mauritius,
+  @HiveField(110)
   mexico,
+  @HiveField(111)
   micronesia,
+  @HiveField(112)
   moldova,
+  @HiveField(113)
   monaco,
+  @HiveField(114)
   mongolia,
+  @HiveField(115)
   montenegro,
+  @HiveField(116)
   morocco,
+  @HiveField(117)
   mozambique,
+  @HiveField(118)
   myanmar,
+  @HiveField(119)
   namibia,
+  @HiveField(120)
   nauru,
+  @HiveField(121)
   nepal,
+  @HiveField(122)
   netherlands,
+  @HiveField(123)
   newZealand,
+  @HiveField(124)
   nicaragua,
+  @HiveField(125)
   niger,
+  @HiveField(126)
   nigeria,
+  @HiveField(127)
   northKorea,
+  @HiveField(128)
   northMacedonia,
+  @HiveField(129)
   norway,
+  @HiveField(130)
   oman,
+  @HiveField(131)
   pakistan,
+  @HiveField(132)
   palau,
+  @HiveField(133)
   palestine,
+  @HiveField(134)
   panama,
+  @HiveField(135)
   papuaNewGuinea,
+  @HiveField(136)
   paraguay,
+  @HiveField(137)
   peru,
+  @HiveField(138)
   philippines,
+  @HiveField(139)
   poland,
+  @HiveField(140)
   portugal,
+  @HiveField(141)
   qatar,
+  @HiveField(142)
   romania,
+  @HiveField(143)
   russia,
+  @HiveField(144)
   rwanda,
+  @HiveField(145)
   saintKittsAndNevis,
+  @HiveField(146)
   saintLucia,
+  @HiveField(147)
   saintVincentAndTheGrenadines,
+  @HiveField(148)
   samoa,
+  @HiveField(149)
   sanMarino,
+  @HiveField(150)
   saoTomeAndPrincipe,
+  @HiveField(151)
   saudiArabia,
+  @HiveField(152)
   senegal,
+  @HiveField(153)
   serbia,
+  @HiveField(154)
   seychelles,
+  @HiveField(155)
   sierraLeone,
+  @HiveField(156)
   singapore,
+  @HiveField(157)
   slovakia,
+  @HiveField(158)
   slovenia,
+  @HiveField(159)
   solomonIslands,
+  @HiveField(160)
   somalia,
+  @HiveField(161)
   southAfrica,
+  @HiveField(162)
   southKorea,
+  @HiveField(163)
   southSudan,
+  @HiveField(164)
   spain,
+  @HiveField(165)
   sriLanka,
+  @HiveField(166)
   sudan,
+  @HiveField(167)
   suriname,
+  @HiveField(168)
   sweden,
+  @HiveField(169)
   switzerland,
+  @HiveField(170)
   syria,
+  @HiveField(171)
   taiwan,
+  @HiveField(172)
   tajikistan,
+  @HiveField(173)
   tanzania,
+  @HiveField(174)
   thailand,
+  @HiveField(175)
   togo,
+  @HiveField(176)
   tonga,
+  @HiveField(177)
   trinidadAndTobago,
+  @HiveField(178)
   tunisia,
+  @HiveField(179)
   turkey,
+  @HiveField(180)
   turkmenistan,
+  @HiveField(181)
   tuvalu,
+  @HiveField(182)
   uganda,
+  @HiveField(183)
   ukraine,
+  @HiveField(184)
   unitedArabEmirates,
+  @HiveField(185)
   unitedKingdom,
+  @HiveField(186)
   unitedStates,
+  @HiveField(187)
   uruguay,
+  @HiveField(188)
   uzbekistan,
+  @HiveField(189)
   vanuatu,
+  @HiveField(190)
   vaticanCity,
+  @HiveField(191)
   venezuela,
+  @HiveField(192)
   vietnam,
+  @HiveField(193)
   yemen,
+  @HiveField(194)
   zambia,
+  @HiveField(195)
   zimbabwe,
 }

@@ -7,7 +7,9 @@ import 'package:flutter_football/frameworks-and-drivers/hive/hive_adapters.dart'
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
-    registerAdapter(CoachAdapter());
-    registerAdapter(PersonAdapter());
+    registerAdapter(ClubHiveObjAdapter());
+    registerAdapter(GameSlotHiveObjAdapter());
+    registerAdapter(NationAdapter());
+    registerAdapter(SeasonHiveObjAdapter());
   }
 }
