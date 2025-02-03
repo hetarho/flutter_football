@@ -18,12 +18,12 @@ class SeasonHiveObj extends HiveObject implements SeasonModel {
     required this.leagueId,
   });
 
-  factory SeasonHiveObj.fromModel(SeasonModel model) {
+  factory SeasonHiveObj.fromModel(SeasonModel model, {int? id, List<int>? clubIds, int? leagueId}) {
     return SeasonHiveObj(
-      id: model.id,
+      id: id ?? model.id,
       name: model.name,
-      clubIds: model.clubIds,
-      leagueId: model.leagueId,
+      clubIds: clubIds ?? model.clubIds,
+      leagueId: leagueId ?? model.leagueId,
     );
   }
 }

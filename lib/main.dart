@@ -14,6 +14,8 @@ import 'package:flutter_football/frameworks-and-drivers/repositories/club.reposi
 import 'package:flutter_football/frameworks-and-drivers/repositories/game_slot.repository.dart';
 import 'package:flutter_football/frameworks-and-drivers/repositories/season.repository.dart';
 import 'package:flutter_football/usecases/create_game_slot.usecase.dart';
+import 'package:flutter_football/usecases/delete_game_slot.usecase.dart';
+import 'package:flutter_football/usecases/find_all_game_slot.usecase.dart';
 import 'package:flutter_football/usecases/find_game_slot.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -59,12 +61,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void _createNewGame() async {
-    final clubRepository = ClubRepository(HiveClubDataSource(Hive.box(HiveClubDataSource.boxName)));
-    final seasonRepository = SeasonRepository(HiveSeasonDataSource(Hive.box(HiveSeasonDataSource.boxName)), clubRepository);
-    final gameSlotRepository = GameSlotRepository(HiveGameSlotDataSource(Hive.box(HiveGameSlotDataSource.boxName)), seasonRepository, clubRepository);
+  final _gameSlotRepository = GameSlotRepository(
+    HiveGameSlotDataSource(Hive.box(HiveGameSlotDataSource.boxName)),
+    SeasonRepository(HiveSeasonDataSource(Hive.box(HiveSeasonDataSource.boxName)), ClubRepository(HiveClubDataSource(Hive.box(HiveClubDataSource.boxName)))),
+    ClubRepository(HiveClubDataSource(Hive.box(HiveClubDataSource.boxName))),
+  );
 
-    final createGameSlotUsecase = CreateGameSlotUsecase(gameSlotRepository);
+  List<GameSlot> _gameSlots = [];
+
+  void _createNewGame() async {
+    final createGameSlotUsecase = CreateGameSlotUsecase(_gameSlotRepository);
 
     final testClub = Club(
       name: 'test-club',
@@ -81,6 +87,10 @@ class _MyHomePageState extends State<MyHomePage> {
     await createGameSlotUsecase.execute(
       GameSlot(id: 1, saveName: 'test', createdAt: DateTime.now(), lastPlayedAt: DateTime.now(), currentSeason: testSeason, seasons: [testSeason], userClub: testClub),
     );
+
+    setState(() {
+      _loadGame();
+    });
   }
 
   void _loadGame() async {
@@ -88,11 +98,23 @@ class _MyHomePageState extends State<MyHomePage> {
     final seasonRepository = SeasonRepository(HiveSeasonDataSource(Hive.box(HiveSeasonDataSource.boxName)), clubRepository);
     final gameSlotRepository = GameSlotRepository(HiveGameSlotDataSource(Hive.box(HiveGameSlotDataSource.boxName)), seasonRepository, clubRepository);
 
-    final findGameSlotUsecase = FindGameSlotUsecase(gameSlotRepository);
+    final findAllGameSlotUsecase = FindAllGameSlotUsecase(gameSlotRepository);
 
-    final gameSlot = await findGameSlotUsecase.execute(1);
+    final gameSlots = await findAllGameSlotUsecase.execute();
 
-    print(gameSlot);
+    print(gameSlots);
+
+    setState(() {
+      _gameSlots = gameSlots;
+    });
+  }
+
+  void _deleteGame(int id) async {
+    final deleteGameSlotUsecase = DeleteGameSlotUsecase(_gameSlotRepository);
+    await deleteGameSlotUsecase.execute(id);
+    setState(() {
+      _loadGame();
+    });
   }
 
   @override
@@ -114,6 +136,14 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: _loadGame,
               child: const Text('Load Game'),
             ),
+            ..._gameSlots.map((gameSlot) => Row(
+                  children: [
+                    Text(gameSlot.id.toString()),
+                    Text(gameSlot.saveName),
+                    Text(gameSlot.currentSeason.id.toString()),
+                    ElevatedButton(onPressed: () => _deleteGame(gameSlot.id), child: const Text('Delete')),
+                  ],
+                )),
           ],
         ),
       ),

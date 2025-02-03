@@ -1,20 +1,23 @@
 import 'package:flutter_football/adapters/entityToHiveObj/season.hive_obj.dart';
-import 'package:flutter_football/frameworks-and-drivers/datasources/data_source.dart';
+import 'package:flutter_football/frameworks-and-drivers/datasources/hive_datasource.dart';
 import 'package:flutter_football/frameworks-and-drivers/models/season.model.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
-class HiveSeasonDataSource implements DataSource<SeasonModel> {
+class HiveSeasonDataSource extends HiveDataSource<SeasonModel, SeasonHiveObj> {
   static const boxName = 'season';
   final Box<SeasonHiveObj> _box;
-  const HiveSeasonDataSource(this._box);
+  const HiveSeasonDataSource(super.box) : _box = box;
 
   @override
-  Future<void> create(SeasonModel data) async {
-    await _box.put(data.id, SeasonHiveObj.fromModel(data));
+  Future<int> create(SeasonModel data) async {
+    final id = findNextID();
+    await _box.put(id, SeasonHiveObj.fromModel(data, id: id));
+    return id;
   }
 
   @override
   Future<SeasonHiveObj?> find(int id) async {
+    // await _box.clear();
     return _box.get(id);
   }
 

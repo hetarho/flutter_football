@@ -13,10 +13,19 @@ class GameSlotRepository implements IRepository<GameSlot> {
   final IRepository<Club> _clubRepository;
 
   @override
-  Future<void> create(GameSlot gameSlot) async {
-    await _datasource.create(GameSlotModel.fromEntity(gameSlot));
-    await _seasonRepository.create(gameSlot.currentSeason);
-    await _clubRepository.create(gameSlot.userClub);
+  Future<int> create(GameSlot gameSlot) async {
+    final currentSeasonId = await _seasonRepository.create(gameSlot.currentSeason);
+    final userClubId = await _clubRepository.create(gameSlot.userClub);
+    final gameSlotId = await _datasource.create(GameSlotModel(
+      id: gameSlot.id,
+      saveName: gameSlot.saveName,
+      createdAt: gameSlot.createdAt,
+      lastPlayedAt: gameSlot.lastPlayedAt,
+      currentSeasonId: currentSeasonId,
+      seasonIds: [currentSeasonId],
+      userClubId: userClubId,
+    ));
+    return gameSlotId;
   }
 
   @override
@@ -28,14 +37,22 @@ class GameSlotRepository implements IRepository<GameSlot> {
 
   @override
   Future<void> delete(int id) async {
+    final gameSlotModel = await _datasource.find(id);
+    if (gameSlotModel == null) return;
+
     await _datasource.delete(id);
-    await _seasonRepository.delete(id);
-    await _clubRepository.delete(id);
+    for (var id in gameSlotModel.seasonIds) {
+      await _seasonRepository.delete(id);
+    }
   }
 
   Future<GameSlot?> _gameSlotFromModel(GameSlotModel gameSlotModel) async {
     final season = await _seasonRepository.find(gameSlotModel.currentSeasonId);
     final club = await _clubRepository.find(gameSlotModel.userClubId);
+
+    print(gameSlotModel.seasonIds);
+
+    final seasons = (await Future.wait(gameSlotModel.seasonIds.map((id) => _seasonRepository.find(id)))).whereType<Season>().toList();
 
     if (season == null || club == null) return null;
 
@@ -45,7 +62,7 @@ class GameSlotRepository implements IRepository<GameSlot> {
       createdAt: gameSlotModel.createdAt,
       lastPlayedAt: gameSlotModel.lastPlayedAt,
       currentSeason: season,
-      seasons: [],
+      seasons: seasons,
       userClub: club,
     );
   }

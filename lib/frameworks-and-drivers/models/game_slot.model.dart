@@ -1,7 +1,7 @@
 import 'package:flutter_football/entities/game_slot/game_slot.dart';
+import 'package:flutter_football/frameworks-and-drivers/models/_model.dart';
 
-class GameSlotModel {
-  final int id;
+class GameSlotModel extends Model {
   final String saveName;
   final DateTime createdAt;
   final DateTime lastPlayedAt;
@@ -10,7 +10,7 @@ class GameSlotModel {
   final int userClubId;
 
   const GameSlotModel({
-    required this.id,
+    required super.id,
     required this.saveName,
     required this.createdAt,
     required this.lastPlayedAt,

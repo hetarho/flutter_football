@@ -1,8 +1,8 @@
 import 'package:flutter_football/entities/club/club.dart';
 import 'package:flutter_football/entities/enum/nation.dart';
+import 'package:flutter_football/frameworks-and-drivers/models/_model.dart';
 
-class ClubModel {
-  final int id;
+class ClubModel extends Model {
   final String name;
   final int tier;
   final Nation nation;
@@ -14,7 +14,7 @@ class ClubModel {
   final int losses;
 
   ClubModel({
-    required this.id,
+    required super.id,
     required this.name,
     required this.tier,
     required this.nation,
@@ -41,4 +41,3 @@ class ClubModel {
     );
   }
 }
-

@@ -27,15 +27,15 @@ class GameSlotHiveObj extends HiveObject implements GameSlotModel {
     required this.userClubId,
   });
 
-  factory GameSlotHiveObj.fromModel(GameSlotModel model) {
+  factory GameSlotHiveObj.fromModel(GameSlotModel model, {int? id, List<int>? seasonIds, int? currentSeasonId, int? userClubId}) {
     return GameSlotHiveObj(
-      id: model.id,
+      id: id ?? model.id,
       saveName: model.saveName,
       createdAt: model.createdAt,
       lastPlayedAt: model.lastPlayedAt,
-      currentSeasonId: model.currentSeasonId,
-      seasonIds: model.seasonIds,
-      userClubId: model.userClubId,
+      currentSeasonId: currentSeasonId ?? model.currentSeasonId,
+      seasonIds: seasonIds ?? model.seasonIds,
+      userClubId: userClubId ?? model.userClubId,
     );
   }
 }

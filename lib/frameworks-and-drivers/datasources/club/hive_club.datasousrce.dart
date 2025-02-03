@@ -1,16 +1,18 @@
 import 'package:flutter_football/adapters/entityToHiveObj/club.hive_obj.dart';
-import 'package:flutter_football/frameworks-and-drivers/datasources/data_source.dart';
+import 'package:flutter_football/frameworks-and-drivers/datasources/hive_datasource.dart';
 import 'package:flutter_football/frameworks-and-drivers/models/club.model.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
-class HiveClubDataSource implements DataSource<ClubModel> {
+class HiveClubDataSource extends HiveDataSource<ClubModel, ClubHiveObj> {
   static const boxName = 'club';
   final Box<ClubHiveObj> _box;
-  const HiveClubDataSource(this._box);
+  const HiveClubDataSource(super.box) : _box = box;
 
   @override
-  Future<void> create(ClubModel data) async {
-    await _box.put(data.id, ClubHiveObj.fromModel(data));
+  Future<int> create(ClubModel data) async {
+    final id = findNextID();
+    await _box.put(id, ClubHiveObj.fromModel(data, id: id));
+    return id;
   }
 
   @override
@@ -25,6 +27,7 @@ class HiveClubDataSource implements DataSource<ClubModel> {
 
   @override
   Future<ClubHiveObj?> find(int id) async {
+    // await _box.clear();
     return _box.get(id);
   }
 

@@ -14,4 +14,9 @@ class Season extends Entity {
     // required this.fixtures,
     required this.clubs,
   });
+
+  @override
+  String toString() {
+    return 'Season(id: $id, name: $name, leagueId: $leagueId, clubs: $clubs)';
+  }
 }

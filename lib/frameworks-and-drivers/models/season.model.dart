@@ -1,13 +1,13 @@
 import 'package:flutter_football/entities/season/season.dart';
+import 'package:flutter_football/frameworks-and-drivers/models/_model.dart';
 
-class SeasonModel {
-  final int id;
+class SeasonModel extends Model {
   final String name;
   final int leagueId;
   final List<int> clubIds;
 
   const SeasonModel({
-    required this.id,
+    required super.id,
     required this.name,
     required this.leagueId,
     required this.clubIds,

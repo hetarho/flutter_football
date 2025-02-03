@@ -9,8 +9,8 @@ class ClubRepository implements IRepository<Club> {
   final DataSource<ClubModel> _datasource;
 
   @override
-  Future<void> create(Club club) async {
-    await _datasource.create(ClubModel.fromEntity(club));
+  Future<int> create(Club club) async {
+    return await _datasource.create(ClubModel.fromEntity(club));
   }
 
   @override
@@ -21,6 +21,20 @@ class ClubRepository implements IRepository<Club> {
   @override
   Future<void> delete(int id) async {
     await _datasource.delete(id);
+  }
+
+  @override
+  Future<Club?> find(int id) async {
+    final clubModel = await _datasource.find(id);
+    if (clubModel == null) return null;
+
+    return _clubFromModel(clubModel);
+  }
+
+  @override
+  Future<List<Club>> findAll() async {
+    final clubModels = await _datasource.findAll();
+    return clubModels.map((model) => _clubFromModel(model)).toList();
   }
 
   Club _clubFromModel(ClubModel clubModel) {
@@ -36,19 +50,5 @@ class ClubRepository implements IRepository<Club> {
       losses: clubModel.losses,
       wins: clubModel.wins,
     );
-  }
-
-  @override
-  Future<Club?> find(int id) async {
-    final clubModel = await _datasource.find(id);
-    if (clubModel == null) return null;
-
-    return _clubFromModel(clubModel);
-  }
-
-  @override
-  Future<List<Club>> findAll() async {
-    final clubModels = await _datasource.findAll();
-    return clubModels.map((model) => _clubFromModel(model)).toList();
   }
 }

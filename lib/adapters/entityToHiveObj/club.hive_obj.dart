@@ -37,9 +37,9 @@ class ClubHiveObj extends HiveObject implements ClubModel {
     required this.tier,
   });
 
-  factory ClubHiveObj.fromModel(ClubModel model) {
+  factory ClubHiveObj.fromModel(ClubModel model, {int? id}) {
     return ClubHiveObj(
-      id: model.id,
+      id: id ?? model.id,
       name: model.name,
       leagueId: model.leagueId,
       wins: model.wins,
