@@ -15,16 +15,22 @@ class GameSlotRepository implements IRepository<GameSlot> {
   @override
   Future<void> create(GameSlot gameSlot) async {
     await _datasource.create(GameSlotModel.fromEntity(gameSlot));
+    await _seasonRepository.create(gameSlot.currentSeason);
+    await _clubRepository.create(gameSlot.userClub);
   }
 
   @override
   Future<void> update(GameSlot gameSlot) async {
     await _datasource.update(GameSlotModel.fromEntity(gameSlot));
+    await _seasonRepository.update(gameSlot.currentSeason);
+    await _clubRepository.update(gameSlot.userClub);
   }
 
   @override
   Future<void> delete(int id) async {
     await _datasource.delete(id);
+    await _seasonRepository.delete(id);
+    await _clubRepository.delete(id);
   }
 
   Future<GameSlot?> _gameSlotFromModel(GameSlotModel gameSlotModel) async {
@@ -49,7 +55,7 @@ class GameSlotRepository implements IRepository<GameSlot> {
     final gameSlotModel = await _datasource.find(id);
     if (gameSlotModel == null) return null;
 
-    return _gameSlotFromModel(gameSlotModel);
+    return await _gameSlotFromModel(gameSlotModel);
   }
 
   @override

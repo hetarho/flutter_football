@@ -28,12 +28,27 @@ class ClubHiveObj extends HiveObject implements ClubModel {
     required this.id,
     required this.name,
     required this.leagueId,
-    this.wins = 0,
-    this.draws = 0,
-    this.losses = 0,
+    required this.wins,
+    required this.draws,
+    required this.losses,
     required this.nation,
     required this.shortName,
     required this.stadiumName,
     required this.tier,
   });
+
+  factory ClubHiveObj.fromModel(ClubModel model) {
+    return ClubHiveObj(
+      id: model.id,
+      name: model.name,
+      leagueId: model.leagueId,
+      wins: model.wins,
+      draws: model.draws,
+      losses: model.losses,
+      nation: model.nation,
+      shortName: model.shortName,
+      stadiumName: model.stadiumName,
+      tier: model.tier,
+    );
+  }
 }

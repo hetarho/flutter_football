@@ -1,15 +1,16 @@
 import 'package:flutter_football/adapters/entityToHiveObj/game_slot.hive_obj.dart';
 import 'package:flutter_football/frameworks-and-drivers/datasources/data_source.dart';
+import 'package:flutter_football/frameworks-and-drivers/models/game_slot.model.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
-class HiveGameSlotDataSource implements DataSource<GameSlotHiveObj> {
+class HiveGameSlotDataSource implements DataSource<GameSlotModel> {
   static const boxName = 'game_slot';
   final Box<GameSlotHiveObj> _box;
   const HiveGameSlotDataSource(this._box);
 
   @override
-  Future<void> create(GameSlotHiveObj data) async {
-    await _box.put(data.id, data);
+  Future<void> create(GameSlotModel data) async {
+    await _box.put(data.id, GameSlotHiveObj.fromModel(data));
   }
 
   @override
@@ -23,8 +24,8 @@ class HiveGameSlotDataSource implements DataSource<GameSlotHiveObj> {
   }
 
   @override
-  Future<void> update(GameSlotHiveObj data) async {
-    await _box.put(data.id, data);
+  Future<void> update(GameSlotModel data) async {
+    await _box.put(data.id, GameSlotHiveObj.fromModel(data));
   }
 
   @override

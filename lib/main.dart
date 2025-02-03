@@ -14,6 +14,7 @@ import 'package:flutter_football/frameworks-and-drivers/repositories/club.reposi
 import 'package:flutter_football/frameworks-and-drivers/repositories/game_slot.repository.dart';
 import 'package:flutter_football/frameworks-and-drivers/repositories/season.repository.dart';
 import 'package:flutter_football/usecases/create_game_slot.usecase.dart';
+import 'package:flutter_football/usecases/find_game_slot.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -59,9 +60,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   void _createNewGame() async {
-    Box<ClubHiveObj> clubBox = Hive.box(HiveClubDataSource.boxName);
-
-    final clubRepository = ClubRepository(HiveClubDataSource(clubBox));
+    final clubRepository = ClubRepository(HiveClubDataSource(Hive.box(HiveClubDataSource.boxName)));
     final seasonRepository = SeasonRepository(HiveSeasonDataSource(Hive.box(HiveSeasonDataSource.boxName)), clubRepository);
     final gameSlotRepository = GameSlotRepository(HiveGameSlotDataSource(Hive.box(HiveGameSlotDataSource.boxName)), seasonRepository, clubRepository);
 
@@ -80,19 +79,21 @@ class _MyHomePageState extends State<MyHomePage> {
     final testSeason = Season(id: 1, name: 'test', clubs: [testClub], leagueId: 1);
 
     await createGameSlotUsecase.execute(
-      GameSlot(
-        id: 1,
-        saveName: 'test',
-        createdAt: DateTime.now(),
-        lastPlayedAt: DateTime.now(),
-        currentSeason: testSeason,
-        seasons: [testSeason],
-        userClub: testClub
-      ),
+      GameSlot(id: 1, saveName: 'test', createdAt: DateTime.now(), lastPlayedAt: DateTime.now(), currentSeason: testSeason, seasons: [testSeason], userClub: testClub),
     );
   }
 
-  void _loadGame() {}
+  void _loadGame() async {
+    final clubRepository = ClubRepository(HiveClubDataSource(Hive.box(HiveClubDataSource.boxName)));
+    final seasonRepository = SeasonRepository(HiveSeasonDataSource(Hive.box(HiveSeasonDataSource.boxName)), clubRepository);
+    final gameSlotRepository = GameSlotRepository(HiveGameSlotDataSource(Hive.box(HiveGameSlotDataSource.boxName)), seasonRepository, clubRepository);
+
+    final findGameSlotUsecase = FindGameSlotUsecase(gameSlotRepository);
+
+    final gameSlot = await findGameSlotUsecase.execute(1);
+
+    print(gameSlot);
+  }
 
   @override
   Widget build(BuildContext context) {
