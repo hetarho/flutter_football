@@ -16,6 +16,8 @@ class GameSlotHiveObj extends HiveObject implements GameSlotModel {
   final List<int> seasonIds;
   @override
   final int userClubId;
+  @override
+  final List<int> clubIds;
 
   GameSlotHiveObj({
     required this.id,
@@ -25,9 +27,10 @@ class GameSlotHiveObj extends HiveObject implements GameSlotModel {
     required this.currentSeasonId,
     required this.seasonIds,
     required this.userClubId,
+    required this.clubIds,
   });
 
-  factory GameSlotHiveObj.fromModel(GameSlotModel model, {int? id, List<int>? seasonIds, int? currentSeasonId, int? userClubId}) {
+  factory GameSlotHiveObj.fromModel(GameSlotModel model, {int? id, List<int>? seasonIds, int? currentSeasonId, int? userClubId, List<int>? clubIds}) {
     return GameSlotHiveObj(
       id: id ?? model.id,
       saveName: model.saveName,
@@ -36,6 +39,7 @@ class GameSlotHiveObj extends HiveObject implements GameSlotModel {
       currentSeasonId: currentSeasonId ?? model.currentSeasonId,
       seasonIds: seasonIds ?? model.seasonIds,
       userClubId: userClubId ?? model.userClubId,
+      clubIds: clubIds ?? model.clubIds,
     );
   }
 }

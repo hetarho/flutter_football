@@ -35,4 +35,9 @@ class HiveGameSlotDataSource extends HiveDataSource<GameSlotModel, GameSlotHiveO
   Future<void> delete(int id) async {
     await _box.delete(id);
   }
+
+  @override
+  Future<void> clear() async {
+    await _box.clear();
+  }
 }

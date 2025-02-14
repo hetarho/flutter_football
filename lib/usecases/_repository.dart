@@ -4,4 +4,5 @@ abstract class IRepository<T> {
   Future<List<T>> findAll();
   Future<void> update(T data);
   Future<void> delete(int id);
+  Future<void> clear();
 }

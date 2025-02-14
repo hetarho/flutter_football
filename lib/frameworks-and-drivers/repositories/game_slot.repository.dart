@@ -12,10 +12,15 @@ class GameSlotRepository implements IRepository<GameSlot> {
   final IRepository<Season> _seasonRepository;
   final IRepository<Club> _clubRepository;
 
+  Future<void> clear() async {
+    await _datasource.clear();
+  }
+
   @override
   Future<int> create(GameSlot gameSlot) async {
     final currentSeasonId = await _seasonRepository.create(gameSlot.currentSeason);
     final userClubId = await _clubRepository.create(gameSlot.userClub);
+    final clubIds = await Future.wait(gameSlot.clubs.map((club) => _clubRepository.create(club)));
     final gameSlotId = await _datasource.create(GameSlotModel(
       id: gameSlot.id,
       saveName: gameSlot.saveName,
@@ -24,6 +29,7 @@ class GameSlotRepository implements IRepository<GameSlot> {
       currentSeasonId: currentSeasonId,
       seasonIds: [currentSeasonId],
       userClubId: userClubId,
+      clubIds: clubIds,
     ));
     return gameSlotId;
   }
@@ -40,20 +46,23 @@ class GameSlotRepository implements IRepository<GameSlot> {
     final gameSlotModel = await _datasource.find(id);
     if (gameSlotModel == null) return;
 
-    await _datasource.delete(id);
     for (var id in gameSlotModel.seasonIds) {
       await _seasonRepository.delete(id);
     }
+
+    for (var id in gameSlotModel.clubIds) {
+      await _clubRepository.delete(id);
+    }
+
+    await _datasource.delete(id);
   }
 
   Future<GameSlot?> _gameSlotFromModel(GameSlotModel gameSlotModel) async {
     final season = await _seasonRepository.find(gameSlotModel.currentSeasonId);
     final club = await _clubRepository.find(gameSlotModel.userClubId);
 
-    print(gameSlotModel.seasonIds);
-
     final seasons = (await Future.wait(gameSlotModel.seasonIds.map((id) => _seasonRepository.find(id)))).whereType<Season>().toList();
-
+    final clubs = (await Future.wait(gameSlotModel.clubIds.map((id) => _clubRepository.find(id)))).whereType<Club>().toList();
     if (season == null || club == null) return null;
 
     return GameSlot(
@@ -64,6 +73,7 @@ class GameSlotRepository implements IRepository<GameSlot> {
       currentSeason: season,
       seasons: seasons,
       userClub: club,
+      clubs: clubs,
     );
   }
 

@@ -35,4 +35,9 @@ class HiveSeasonDataSource extends HiveDataSource<SeasonModel, SeasonHiveObj> {
   Future<void> delete(int id) async {
     await _box.delete(id);
   }
+
+  @override
+  Future<void> clear() async {
+    await _box.clear();
+  }
 }

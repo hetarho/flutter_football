@@ -11,6 +11,7 @@ class GameSlot extends Entity {
   final Season currentSeason;
   final List<Season> seasons;
   final Club userClub;
+  final List<Club> clubs;
 
   GameSlot({
     required super.id,
@@ -20,6 +21,7 @@ class GameSlot extends Entity {
     required this.currentSeason,
     required this.seasons,
     required this.userClub,
+    required this.clubs,
   });
 
   @override
@@ -31,7 +33,8 @@ class GameSlot extends Entity {
       lastPlayedAt: $lastPlayedAt,
       currentSeason: $currentSeason,
       seasons: $seasons,
-      userClub: $userClub
+      userClub: $userClub,
+      clubs: $clubs
     )''';
   }
 }

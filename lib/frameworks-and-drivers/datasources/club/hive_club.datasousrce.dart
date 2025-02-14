@@ -35,4 +35,9 @@ class HiveClubDataSource extends HiveDataSource<ClubModel, ClubHiveObj> {
   Future<List<ClubHiveObj>> findAll() async {
     return _box.values.toList();
   }
+
+  @override
+  Future<void> clear() async {
+    await _box.clear();
+  }
 }

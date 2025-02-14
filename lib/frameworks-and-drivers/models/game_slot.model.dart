@@ -8,6 +8,7 @@ class GameSlotModel extends Model {
   final int currentSeasonId;
   final List<int> seasonIds;
   final int userClubId;
+  final List<int> clubIds;
 
   const GameSlotModel({
     required super.id,
@@ -17,6 +18,7 @@ class GameSlotModel extends Model {
     required this.currentSeasonId,
     required this.seasonIds,
     required this.userClubId,
+    required this.clubIds,
   });
 
   factory GameSlotModel.fromEntity(GameSlot gameSlot) => GameSlotModel(
@@ -27,5 +29,6 @@ class GameSlotModel extends Model {
         currentSeasonId: gameSlot.currentSeason.id,
         seasonIds: gameSlot.seasons.map((season) => season.id).toList(),
         userClubId: gameSlot.userClub.id,
+        clubIds: gameSlot.clubs.map((club) => club.id).toList(),
       );
 }

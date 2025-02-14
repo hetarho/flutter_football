@@ -8,8 +8,8 @@ part 'hive_adapters.g.dart';
 
 @GenerateAdapters([
   AdapterSpec<GameSlotHiveObj>(),
-  AdapterSpec<Nation>(),
   AdapterSpec<ClubHiveObj>(),
   AdapterSpec<SeasonHiveObj>(),
+  AdapterSpec<Nation>(),
 ])
 class HiveAdapters {}

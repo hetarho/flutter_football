@@ -9,6 +9,11 @@ class SeasonRepository implements IRepository<Season> {
 
   final DataSource<SeasonModel> _datasource;
   final IRepository<Club> _clubRepository;
+
+  Future<void> clear() async {
+    await _datasource.clear();
+  }
+
   @override
   Future<int> create(Season season) async {
     return await _datasource.create(SeasonModel.fromEntity(season));

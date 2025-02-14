@@ -24,13 +24,14 @@ class GameSlotHiveObjAdapter extends TypeAdapter<GameSlotHiveObj> {
       currentSeasonId: (fields[4] as num).toInt(),
       seasonIds: (fields[5] as List).cast<int>(),
       userClubId: (fields[6] as num).toInt(),
+      clubIds: (fields[7] as List).cast<int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, GameSlotHiveObj obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class GameSlotHiveObjAdapter extends TypeAdapter<GameSlotHiveObj> {
       ..writeByte(5)
       ..write(obj.seasonIds)
       ..writeByte(6)
-      ..write(obj.userClubId);
+      ..write(obj.userClubId)
+      ..writeByte(7)
+      ..write(obj.clubIds);
   }
 
   @override
@@ -885,9 +888,9 @@ class ClubHiveObjAdapter extends TypeAdapter<ClubHiveObj> {
       id: (fields[0] as num).toInt(),
       name: fields[1] as String,
       leagueId: (fields[2] as num).toInt(),
-      wins: fields[3] == null ? 0 : (fields[3] as num).toInt(),
-      draws: fields[4] == null ? 0 : (fields[4] as num).toInt(),
-      losses: fields[5] == null ? 0 : (fields[5] as num).toInt(),
+      wins: (fields[3] as num).toInt(),
+      draws: (fields[4] as num).toInt(),
+      losses: (fields[5] as num).toInt(),
       nation: fields[6] as Nation,
       shortName: fields[7] as String,
       stadiumName: fields[8] as String,

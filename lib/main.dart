@@ -16,7 +16,6 @@ import 'package:flutter_football/frameworks-and-drivers/repositories/season.repo
 import 'package:flutter_football/usecases/create_game_slot.usecase.dart';
 import 'package:flutter_football/usecases/delete_game_slot.usecase.dart';
 import 'package:flutter_football/usecases/find_all_game_slot.usecase.dart';
-import 'package:flutter_football/usecases/find_game_slot.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -82,10 +81,31 @@ class _MyHomePageState extends State<MyHomePage> {
       leagueId: 1,
     );
 
+    final testClubs = List.generate(
+        10,
+        (index) => Club(
+              name: 'test-club-$index',
+              id: index + 1,
+              tier: 1,
+              nation: Nation.brazil,
+              stadiumName: 'stadiumName',
+              shortName: 'shortName',
+              leagueId: 1,
+            ));
+
     final testSeason = Season(id: 1, name: 'test', clubs: [testClub], leagueId: 1);
 
     await createGameSlotUsecase.execute(
-      GameSlot(id: 1, saveName: 'test', createdAt: DateTime.now(), lastPlayedAt: DateTime.now(), currentSeason: testSeason, seasons: [testSeason], userClub: testClub),
+      GameSlot(
+        id: 1,
+        saveName: 'test',
+        createdAt: DateTime.now(),
+        lastPlayedAt: DateTime.now(),
+        currentSeason: testSeason,
+        seasons: [testSeason],
+        userClub: testClub,
+        clubs: testClubs,
+      ),
     );
 
     setState(() {
@@ -128,13 +148,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: _createNewGame,
-              child: const Text('Create New Game'),
-            ),
-            ElevatedButton(
-              onPressed: _loadGame,
-              child: const Text('Load Game'),
+            Row(
+              children: [
+                ElevatedButton(onPressed: _createNewGame, child: const Text('Create')),
+                ElevatedButton(onPressed: _loadGame, child: const Text('Load Game')),
+              ],
             ),
             ..._gameSlots.map((gameSlot) => Row(
                   children: [
