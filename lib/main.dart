@@ -13,6 +13,7 @@ import 'package:flutter_football/frameworks-and-drivers/hive/hive_registrar.g.da
 import 'package:flutter_football/frameworks-and-drivers/repositories/club.repository.dart';
 import 'package:flutter_football/frameworks-and-drivers/repositories/game_slot.repository.dart';
 import 'package:flutter_football/frameworks-and-drivers/repositories/season.repository.dart';
+import 'package:flutter_football/usecases/clear_db.usecase.dart';
 import 'package:flutter_football/usecases/create_game_slot.usecase.dart';
 import 'package:flutter_football/usecases/delete_game_slot.usecase.dart';
 import 'package:flutter_football/usecases/find_all_game_slot.usecase.dart';
@@ -60,11 +61,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _gameSlotRepository = GameSlotRepository(
-    HiveGameSlotDataSource(Hive.box(HiveGameSlotDataSource.boxName)),
-    SeasonRepository(HiveSeasonDataSource(Hive.box(HiveSeasonDataSource.boxName)), ClubRepository(HiveClubDataSource(Hive.box(HiveClubDataSource.boxName)))),
-    ClubRepository(HiveClubDataSource(Hive.box(HiveClubDataSource.boxName))),
-  );
+  late final GameSlotRepository _gameSlotRepository;
+  late final SeasonRepository _seasonRepository;
+  late final ClubRepository _clubRepository;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final gameSlotBox = Hive.box<GameSlotHiveObj>(HiveGameSlotDataSource.boxName);
+    final seasonBox = Hive.box<SeasonHiveObj>(HiveSeasonDataSource.boxName);
+    final clubBox = Hive.box<ClubHiveObj>(HiveClubDataSource.boxName);
+
+    final gameSlotDataSource = HiveGameSlotDataSource(gameSlotBox);
+    final seasonDataSource = HiveSeasonDataSource(seasonBox);
+    final clubDataSource = HiveClubDataSource(clubBox);
+
+    _clubRepository = ClubRepository(clubDataSource);
+    _seasonRepository = SeasonRepository(seasonDataSource, _clubRepository);
+    _gameSlotRepository = GameSlotRepository(gameSlotDataSource, _seasonRepository, _clubRepository);
+  }
 
   List<GameSlot> _gameSlots = [];
 
@@ -114,11 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _loadGame() async {
-    final clubRepository = ClubRepository(HiveClubDataSource(Hive.box(HiveClubDataSource.boxName)));
-    final seasonRepository = SeasonRepository(HiveSeasonDataSource(Hive.box(HiveSeasonDataSource.boxName)), clubRepository);
-    final gameSlotRepository = GameSlotRepository(HiveGameSlotDataSource(Hive.box(HiveGameSlotDataSource.boxName)), seasonRepository, clubRepository);
-
-    final findAllGameSlotUsecase = FindAllGameSlotUsecase(gameSlotRepository);
+    final findAllGameSlotUsecase = FindAllGameSlotUsecase(_gameSlotRepository);
 
     final gameSlots = await findAllGameSlotUsecase.execute();
 
@@ -132,6 +144,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void _deleteGame(int id) async {
     final deleteGameSlotUsecase = DeleteGameSlotUsecase(_gameSlotRepository);
     await deleteGameSlotUsecase.execute(id);
+    setState(() {
+      _loadGame();
+    });
+  }
+
+  void _clearDb() async {
+    final clearDbUsecase = ClearDbUsecase(_gameSlotRepository, _seasonRepository, _clubRepository);
+    await clearDbUsecase.execute(null);
     setState(() {
       _loadGame();
     });
@@ -152,6 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 ElevatedButton(onPressed: _createNewGame, child: const Text('Create')),
                 ElevatedButton(onPressed: _loadGame, child: const Text('Load Game')),
+                ElevatedButton(onPressed: _clearDb, child: const Text('Clear DB')),
               ],
             ),
             ..._gameSlots.map((gameSlot) => Row(
