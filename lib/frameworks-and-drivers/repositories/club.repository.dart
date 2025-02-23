@@ -8,6 +8,7 @@ class ClubRepository implements IRepository<Club> {
 
   final DataSource<ClubModel> _datasource;
 
+  @override
   Future<void> clear() async {
     await _datasource.clear();
   }

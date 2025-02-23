@@ -12,6 +12,7 @@ class GameSlotRepository implements IRepository<GameSlot> {
   final IRepository<Season> _seasonRepository;
   final IRepository<Club> _clubRepository;
 
+  @override
   Future<void> clear() async {
     await _datasource.clear();
   }
@@ -19,7 +20,6 @@ class GameSlotRepository implements IRepository<GameSlot> {
   @override
   Future<int> create(GameSlot gameSlot) async {
     final currentSeasonId = await _seasonRepository.create(gameSlot.currentSeason);
-    final userClubId = await _clubRepository.create(gameSlot.userClub);
     final clubIds = await Future.wait(gameSlot.clubs.map((club) => _clubRepository.create(club)));
     final gameSlotId = await _datasource.create(GameSlotModel(
       id: gameSlot.id,
@@ -28,7 +28,7 @@ class GameSlotRepository implements IRepository<GameSlot> {
       lastPlayedAt: gameSlot.lastPlayedAt,
       currentSeasonId: currentSeasonId,
       seasonIds: [currentSeasonId],
-      userClubId: userClubId,
+      userClubId: clubIds.first,
       clubIds: clubIds,
     ));
     return gameSlotId;

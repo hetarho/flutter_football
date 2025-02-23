@@ -5,39 +5,41 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 
 class HiveClubDataSource extends HiveDataSource<ClubModel, ClubHiveObj> {
   static const boxName = 'club';
-  final Box<ClubHiveObj> _box;
-  const HiveClubDataSource(super.box) : _box = box;
+  HiveClubDataSource() : super(boxName);
 
   @override
   Future<int> create(ClubModel data) async {
     final id = findNextID();
-    await _box.put(id, ClubHiveObj.fromModel(data, id: id));
+    print('============================================');
+    print(box.values.toList().map((e) => e.id));
+    print('============================================');
+    await box.put(id, ClubHiveObj.fromModel(data, id: id));
     return id;
   }
 
   @override
   Future<void> update(ClubModel data) async {
-    await _box.put(data.id, ClubHiveObj.fromModel(data));
+    await box.put(data.id, ClubHiveObj.fromModel(data));
   }
 
   @override
   Future<void> delete(int id) async {
-    await _box.delete(id);
+    await box.delete(id);
   }
 
   @override
   Future<ClubHiveObj?> find(int id) async {
     // await _box.clear();
-    return _box.get(id);
+    return box.get(id);
   }
 
   @override
   Future<List<ClubHiveObj>> findAll() async {
-    return _box.values.toList();
+    return box.values.toList();
   }
 
   @override
   Future<void> clear() async {
-    await _box.clear();
+    await box.clear();
   }
 }

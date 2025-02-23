@@ -24,10 +24,26 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapters();
 
+  final List<Type> hiveObjTypes = [
+    GameSlotHiveObj,
+    SeasonHiveObj,
+    ClubHiveObj,
+  ];
+
+  final List<String> boxNames = [
+    HiveGameSlotDataSource.boxName,
+    HiveSeasonDataSource.boxName,
+    HiveClubDataSource.boxName,
+  ];
+
   await Future.wait([
     Hive.openBox<GameSlotHiveObj>(HiveGameSlotDataSource.boxName),
     Hive.openBox<SeasonHiveObj>(HiveSeasonDataSource.boxName),
     Hive.openBox<ClubHiveObj>(HiveClubDataSource.boxName),
+  ]);
+
+  await Future.wait([
+    ...boxNames.map((boxName) => Hive.openBox<int>('${boxName}_lastId')),
   ]);
 
   runApp(
@@ -69,13 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    final gameSlotBox = Hive.box<GameSlotHiveObj>(HiveGameSlotDataSource.boxName);
-    final seasonBox = Hive.box<SeasonHiveObj>(HiveSeasonDataSource.boxName);
-    final clubBox = Hive.box<ClubHiveObj>(HiveClubDataSource.boxName);
-
-    final gameSlotDataSource = HiveGameSlotDataSource(gameSlotBox);
-    final seasonDataSource = HiveSeasonDataSource(seasonBox);
-    final clubDataSource = HiveClubDataSource(clubBox);
+    final gameSlotDataSource = HiveGameSlotDataSource();
+    final seasonDataSource = HiveSeasonDataSource();
+    final clubDataSource = HiveClubDataSource();
 
     _clubRepository = ClubRepository(clubDataSource);
     _seasonRepository = SeasonRepository(seasonDataSource, _clubRepository);
@@ -86,16 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _createNewGame() async {
     final createGameSlotUsecase = CreateGameSlotUsecase(_gameSlotRepository);
-
-    final testClub = Club(
-      name: 'test-club',
-      id: 1,
-      tier: 1,
-      nation: Nation.brazil,
-      stadiumName: 'stadiumName',
-      shortName: 'shortName',
-      leagueId: 1,
-    );
 
     final testClubs = List.generate(
         10,
@@ -109,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
               leagueId: 1,
             ));
 
-    final testSeason = Season(id: 1, name: 'test', clubs: [testClub], leagueId: 1);
+    final testSeason = Season(id: 1, name: 'test', clubs: testClubs, leagueId: 1);
 
     await createGameSlotUsecase.execute(
       GameSlot(
@@ -119,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
         lastPlayedAt: DateTime.now(),
         currentSeason: testSeason,
         seasons: [testSeason],
-        userClub: testClub,
+        userClub: testClubs.first,
         clubs: testClubs,
       ),
     );
@@ -133,8 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
     final findAllGameSlotUsecase = FindAllGameSlotUsecase(_gameSlotRepository);
 
     final gameSlots = await findAllGameSlotUsecase.execute();
-
-    print(gameSlots);
 
     setState(() {
       _gameSlots = gameSlots;
