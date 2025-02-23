@@ -21,17 +21,16 @@ class GameSlotHiveObjAdapter extends TypeAdapter<GameSlotHiveObj> {
       saveName: fields[1] as String,
       createdAt: fields[2] as DateTime,
       lastPlayedAt: fields[3] as DateTime,
-      currentSeasonId: (fields[4] as num).toInt(),
-      seasonIds: (fields[5] as List).cast<int>(),
       userClubId: (fields[6] as num).toInt(),
       clubIds: (fields[7] as List).cast<int>(),
+      leagueIds: (fields[8] as List).cast<int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, GameSlotHiveObj obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -40,14 +39,12 @@ class GameSlotHiveObjAdapter extends TypeAdapter<GameSlotHiveObj> {
       ..write(obj.createdAt)
       ..writeByte(3)
       ..write(obj.lastPlayedAt)
-      ..writeByte(4)
-      ..write(obj.currentSeasonId)
-      ..writeByte(5)
-      ..write(obj.seasonIds)
       ..writeByte(6)
       ..write(obj.userClubId)
       ..writeByte(7)
-      ..write(obj.clubIds);
+      ..write(obj.clubIds)
+      ..writeByte(8)
+      ..write(obj.leagueIds);
   }
 
   @override
@@ -974,6 +971,52 @@ class SeasonHiveObjAdapter extends TypeAdapter<SeasonHiveObj> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SeasonHiveObjAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class LeagueHiveObjAdapter extends TypeAdapter<LeagueHiveObj> {
+  @override
+  final int typeId = 6;
+
+  @override
+  LeagueHiveObj read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return LeagueHiveObj(
+      id: (fields[0] as num).toInt(),
+      name: fields[1] as String,
+      tier: (fields[2] as num).toInt(),
+      nation: fields[3] as Nation,
+      clubIds: (fields[4] as List).cast<int>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, LeagueHiveObj obj) {
+    writer
+      ..writeByte(5)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.tier)
+      ..writeByte(3)
+      ..write(obj.nation)
+      ..writeByte(4)
+      ..write(obj.clubIds);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LeagueHiveObjAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

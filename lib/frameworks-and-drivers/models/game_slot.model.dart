@@ -5,20 +5,18 @@ class GameSlotModel extends Model {
   final String saveName;
   final DateTime createdAt;
   final DateTime lastPlayedAt;
-  final int currentSeasonId;
-  final List<int> seasonIds;
   final int userClubId;
   final List<int> clubIds;
-
+  final List<int> leagueIds;
+  
   const GameSlotModel({
     required super.id,
     required this.saveName,
     required this.createdAt,
     required this.lastPlayedAt,
-    required this.currentSeasonId,
-    required this.seasonIds,
     required this.userClubId,
     required this.clubIds,
+    required this.leagueIds,
   });
 
   factory GameSlotModel.fromEntity(GameSlot gameSlot) => GameSlotModel(
@@ -26,9 +24,8 @@ class GameSlotModel extends Model {
         saveName: gameSlot.saveName,
         createdAt: gameSlot.createdAt,
         lastPlayedAt: gameSlot.lastPlayedAt,
-        currentSeasonId: gameSlot.currentSeason.id,
-        seasonIds: gameSlot.seasons.map((season) => season.id).toList(),
         userClubId: gameSlot.userClub.id,
         clubIds: gameSlot.clubs.map((club) => club.id).toList(),
+        leagueIds: gameSlot.leagues.map((league) => league.id).toList(),
       );
 }

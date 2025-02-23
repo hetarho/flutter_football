@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_football/adapters/entityToHiveObj/club.hive_obj.dart';
 import 'package:flutter_football/adapters/entityToHiveObj/game_slot.hive_obj.dart';
+import 'package:flutter_football/adapters/entityToHiveObj/league.hive_obj.dart';
 import 'package:flutter_football/adapters/entityToHiveObj/season.hive_obj.dart';
 import 'package:flutter_football/entities/club/club.dart';
 import 'package:flutter_football/entities/enum/nation.dart';
 import 'package:flutter_football/entities/game_slot/game_slot.dart';
-import 'package:flutter_football/entities/season/season.dart';
-import 'package:flutter_football/frameworks-and-drivers/datasources/club/hive_club.datasousrce.dart';
+import 'package:flutter_football/entities/league/league.dart';
+import 'package:flutter_football/frameworks-and-drivers/datasources/club/hive_club.datasource.dart';
 import 'package:flutter_football/frameworks-and-drivers/datasources/game_slot/hive_game_slot.datasource.dart';
+import 'package:flutter_football/frameworks-and-drivers/datasources/league/hive_league.datasource.dart';
 import 'package:flutter_football/frameworks-and-drivers/datasources/season/hive_season.datasource.dart';
 import 'package:flutter_football/frameworks-and-drivers/hive/hive_registrar.g.dart';
 import 'package:flutter_football/frameworks-and-drivers/repositories/club.repository.dart';
 import 'package:flutter_football/frameworks-and-drivers/repositories/game_slot.repository.dart';
-import 'package:flutter_football/frameworks-and-drivers/repositories/season.repository.dart';
+import 'package:flutter_football/frameworks-and-drivers/repositories/league.repository.dart';
 import 'package:flutter_football/usecases/clear_db.usecase.dart';
 import 'package:flutter_football/usecases/create_game_slot.usecase.dart';
 import 'package:flutter_football/usecases/delete_game_slot.usecase.dart';
@@ -24,22 +26,18 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapters();
 
-  final List<Type> hiveObjTypes = [
-    GameSlotHiveObj,
-    SeasonHiveObj,
-    ClubHiveObj,
-  ];
-
   final List<String> boxNames = [
     HiveGameSlotDataSource.boxName,
     HiveSeasonDataSource.boxName,
     HiveClubDataSource.boxName,
+    HiveLeagueDataSource.boxName,
   ];
 
   await Future.wait([
     Hive.openBox<GameSlotHiveObj>(HiveGameSlotDataSource.boxName),
     Hive.openBox<SeasonHiveObj>(HiveSeasonDataSource.boxName),
     Hive.openBox<ClubHiveObj>(HiveClubDataSource.boxName),
+    Hive.openBox<LeagueHiveObj>(HiveLeagueDataSource.boxName),
   ]);
 
   await Future.wait([
@@ -78,20 +76,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final GameSlotRepository _gameSlotRepository;
-  late final SeasonRepository _seasonRepository;
   late final ClubRepository _clubRepository;
+  late final LeagueRepository _leagueRepository;
 
   @override
   void initState() {
     super.initState();
 
     final gameSlotDataSource = HiveGameSlotDataSource();
-    final seasonDataSource = HiveSeasonDataSource();
     final clubDataSource = HiveClubDataSource();
+    final leagueDataSource = HiveLeagueDataSource();
 
     _clubRepository = ClubRepository(clubDataSource);
-    _seasonRepository = SeasonRepository(seasonDataSource, _clubRepository);
-    _gameSlotRepository = GameSlotRepository(gameSlotDataSource, _seasonRepository, _clubRepository);
+    _leagueRepository = LeagueRepository(leagueDataSource, _clubRepository);
+    _gameSlotRepository = GameSlotRepository(gameSlotDataSource, _clubRepository, _leagueRepository);
   }
 
   List<GameSlot> _gameSlots = [];
@@ -99,19 +97,32 @@ class _MyHomePageState extends State<MyHomePage> {
   void _createNewGame() async {
     final createGameSlotUsecase = CreateGameSlotUsecase(_gameSlotRepository);
 
-    final testClubs = List.generate(
-        10,
-        (index) => Club(
-              name: 'test-club-$index',
-              id: index + 1,
-              tier: 1,
-              nation: Nation.brazil,
-              stadiumName: 'stadiumName',
-              shortName: 'shortName',
-              leagueId: 1,
-            ));
+    List<Club> testClubs = [];
+    List<League> testLeagues = [];
 
-    final testSeason = Season(id: 1, name: 'test', clubs: testClubs, leagueId: 1);
+    for (var i = 0; i < 10; i++) {
+      final createdClubs = List.generate(
+          10,
+          (index) => Club(
+                name: 'test-club-$index',
+                id: index + 1,
+                tier: 1,
+                nation: Nation.brazil,
+                stadiumName: 'stadiumName',
+                shortName: 'shortName',
+                leagueId: 1,
+              ));
+      final testLeague = League(
+        name: 'test-league-$i',
+        id: i + 1,
+        tier: 1,
+        nation: Nation.brazil,
+        clubs: createdClubs,
+      );
+
+      testClubs.addAll(createdClubs);
+      testLeagues.add(testLeague);
+    }
 
     await createGameSlotUsecase.execute(
       GameSlot(
@@ -119,10 +130,9 @@ class _MyHomePageState extends State<MyHomePage> {
         saveName: 'test',
         createdAt: DateTime.now(),
         lastPlayedAt: DateTime.now(),
-        currentSeason: testSeason,
-        seasons: [testSeason],
         userClub: testClubs.first,
         clubs: testClubs,
+        leagues: testLeagues,
       ),
     );
 
@@ -150,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _clearDb() async {
-    final clearDbUsecase = ClearDbUsecase(_gameSlotRepository, _seasonRepository, _clubRepository);
+    final clearDbUsecase = ClearDbUsecase([_gameSlotRepository, _leagueRepository, _clubRepository]);
     await clearDbUsecase.execute(null);
     setState(() {
       _loadGame();
@@ -179,7 +189,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     Text(gameSlot.id.toString()),
                     Text(gameSlot.saveName),
-                    Text(gameSlot.currentSeason.id.toString()),
                     ElevatedButton(onPressed: () => _deleteGame(gameSlot.id), child: const Text('Delete')),
                   ],
                 )),

@@ -1,19 +1,24 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter_football/entities/_entity.dart';
+import 'package:flutter_football/entities/club/club.dart';
 import 'package:flutter_football/entities/enum/nation.dart';
-import 'package:hive_ce_flutter/hive_flutter.dart';
 
-class League extends HiveObject {
-  final int id;
+class League extends Entity {
   final String name;
   final int tier;
   final Nation nation;
-  final List<int> clubIds;
+  final List<Club> clubs;
 
   League({
-    required this.id,
+    required super.id,
     required this.name,
     required this.tier,
     required this.nation,
-    required this.clubIds,
+    required this.clubs,
   });
+
+  @override
+  String toString() {
+    return 'League(id: $id, name: $name, tier: $tier, nation: $nation, clubs: $clubs)';
+  }
 }
